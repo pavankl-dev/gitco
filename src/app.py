@@ -14,12 +14,10 @@ from pathlib import Path
 app = FastAPI(title="Mergington High School API",
               description="API for viewing and signing up for extracurricular activities")
 
-# Mount the static files directory
+# Mount the static files directory~~
 current_dir = Path(__file__).parent
 app.mount("/static", StaticFiles(directory=os.path.join(Path(__file__).parent,
           "static")), name="static")
-
-# In-memory activity database
 activities = {
     "Chess Club": {
         "description": "Learn strategies and compete in chess tournaments",
@@ -39,7 +37,45 @@ activities = {
         "max_participants": 30,
         "participants": ["john@mergington.edu", "olivia@mergington.edu"]
     }
+    ,
+        "Basketball Team": {
+            "description": "Join the school's basketball team and compete in local leagues",
+            "schedule": "Tuesdays and Thursdays, 4:00 PM - 6:00 PM",
+            "max_participants": 15,
+            "participants": ["lucas@mergington.edu"]
+        },
+        "Soccer Club": {
+            "description": "Practice soccer skills and play friendly matches",
+            "schedule": "Wednesdays, 3:30 PM - 5:30 PM",
+            "max_participants": 18,
+            "participants": ["mia@mergington.edu"]
+        },
+        "Drama Club": {
+            "description": "Participate in school plays and learn acting techniques",
+            "schedule": "Mondays, 4:00 PM - 5:30 PM",
+            "max_participants": 20,
+            "participants": ["ava@mergington.edu"]
+        },
+        "Art Workshop": {
+            "description": "Explore painting, drawing, and other visual arts",
+            "schedule": "Fridays, 2:00 PM - 4:00 PM",
+            "max_participants": 16,
+            "participants": ["liam@mergington.edu"]
+        },
+        "Math Olympiad": {
+            "description": "Prepare for math competitions and solve challenging problems",
+            "schedule": "Thursdays, 3:30 PM - 5:00 PM",
+            "max_participants": 10,
+            "participants": ["noah@mergington.edu"]
+        },
+        "Debate Team": {
+            "description": "Develop public speaking and argumentation skills",
+            "schedule": "Tuesdays, 4:00 PM - 5:30 PM",
+            "max_participants": 12,
+            "participants": ["isabella@mergington.edu"]
+        }
 }
+
 
 
 @app.get("/")
@@ -61,6 +97,10 @@ def signup_for_activity(activity_name: str, email: str):
 
     # Get the specificy activity
     activity = activities[activity_name]
+
+    #validate student is not already signed up
+    if email in activity["participants"]:
+        raise HTTPException(status_code=400, detail="Already signed up for this activity")
 
     # Add student
     activity["participants"].append(email)
